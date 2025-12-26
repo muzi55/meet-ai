@@ -50,11 +50,11 @@ export function SignInView() {
       {
         email: form.getValues("email"),
         password: form.getValues("password"),
+        callbackURL: "/",
       },
       {
         onSuccess: () => {
           setPending(false);
-          router.push("/");
         },
         onError: ({ error }) => {
           setPending(false);
@@ -63,6 +63,28 @@ export function SignInView() {
       }
     );
   };
+
+  const onSocial = (provider: "google" | "github") => {
+    setError(null);
+    setPending(true);
+
+    authClient.signIn.social(
+      {
+        provider: provider,
+        callbackURL: "/",
+      },
+      {
+        onSuccess: () => {
+          setPending(false);
+        },
+        onError: ({ error }) => {
+          setPending(false);
+          setError(error.message);
+        },
+      }
+    );
+  };
+
   return (
     <div>
       <Form {...form}>
@@ -132,14 +154,16 @@ export function SignInView() {
               disabled={pending}
               variant="outline"
               type="button"
-              className="w-full">
+              className="w-full"
+              onClick={() => onSocial("google")}>
               Google
             </Button>
             <Button
               disabled={pending}
               variant="outline"
               type="button"
-              className="w-full">
+              className="w-full"
+              onClick={() => onSocial("github")}>
               Github
             </Button>
           </div>

@@ -68,11 +68,11 @@ export function SignUpView() {
         name: form.getValues("name"),
         email: form.getValues("email"),
         password: form.getValues("password"),
+        callbackURL: "/",
       },
       {
         onSuccess: () => {
           setPending(false);
-          router.push("/");
         },
         onError: ({ error }) => {
           setPending(false);
@@ -81,6 +81,7 @@ export function SignUpView() {
       }
     );
   };
+
   return (
     <div>
       <Form {...form}>
@@ -181,22 +182,7 @@ export function SignUpView() {
               Or continue With
             </span>
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <Button
-              disabled={pending}
-              variant="outline"
-              type="button"
-              className="w-full">
-              Google
-            </Button>
-            <Button
-              disabled={pending}
-              variant="outline"
-              type="button"
-              className="w-full">
-              Github
-            </Button>
-          </div>
+
           <div>
             <p className="text-center text-sm">
               Don&apos;t have an account?{" "}
