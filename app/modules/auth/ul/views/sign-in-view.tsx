@@ -16,6 +16,9 @@ import { Alert, AlertTitle } from "@/components/ui/alert";
 import { OctagonAlertIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { authClient } from "@/lib/auth-client";
 
 const formSchema = z.object({
   email: z
@@ -25,7 +28,12 @@ const formSchema = z.object({
     message: "비밀번호를 입력해주세요.",
   }),
 });
+
 export function SignInView() {
+  const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
+  const [pending, setPending] = useState(false);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -33,10 +41,34 @@ export function SignInView() {
       password: "",
     },
   });
+
+  const onSubmit = async () => {
+    setError(null);
+    setPending(true);
+
+    const { error } = await authClient.signIn.email(
+      {
+        email: form.getValues("email"),
+        password: form.getValues("password"),
+      },
+      {
+        onSuccess: () => {
+          setPending(false);
+          router.push("/");
+        },
+        onError: ({ error }) => {
+          setPending(false);
+          setError(error.message);
+        },
+      }
+    );
+  };
   return (
     <div>
       <Form {...form}>
-        <form className="p-6 border rounded-md space-y-4 m-2">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="p-6 border rounded-md space-y-4 m-2">
           <div>
             <h1>Welcome Back</h1>
             <p>Sign in to your account to continue.</p>
@@ -78,15 +110,16 @@ export function SignInView() {
                 </FormItem>
               )}></FormField>
           </div>
-          {true && (
+          {!!error && (
             <Alert className="bg-destructive/10 border-none">
               <OctagonAlertIcon className="w-4 h-4 mr-2 !text-destructive " />
-              <AlertTitle>
-                이메일 또는 비밀번호가 올바르지 않습니다.
-              </AlertTitle>
+              <AlertTitle>{error}</AlertTitle>
             </Alert>
           )}
-          <Button type="submit" className="w-full">
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={pending}>
             sign in
           </Button>
           <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
@@ -96,12 +129,14 @@ export function SignInView() {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <Button
+              disabled={pending}
               variant="outline"
               type="button"
               className="w-full">
               Google
             </Button>
             <Button
+              disabled={pending}
               variant="outline"
               type="button"
               className="w-full">
