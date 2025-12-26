@@ -20,16 +20,30 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 
-const formSchema = z.object({
-  email: z
-    .string()
-    .email("유효한 이메일 주소를 입력해주세요."),
-  password: z.string().min(1, {
-    message: "비밀번호를 입력해주세요.",
-  }),
-});
+const formSchema = z
+  .object({
+    name: z.string().min(1, {
+      message: "이름을 입력해주세요.",
+    }),
+    email: z
+      .string()
+      .email("유효한 이메일 주소를 입력해주세요."),
+    password: z.string().min(1, {
+      message: "비밀번호를 8자 이상 입력해주세요.",
+    }),
+    confirmPassword: z.string().min(1, {
+      message: "비밀번호를 8자 이상 입력해주세요.",
+    }),
+  })
+  .refine(
+    (data) => data.password === data.confirmPassword,
+    {
+      message: "비밀번호가 일치하지 않습니다.",
+      path: ["confirmPassword"],
+    }
+  );
 
-export function SignInView() {
+export function SignUpView() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -37,17 +51,21 @@ export function SignInView() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      name: "",
       email: "",
       password: "",
+      confirmPassword: "",
     },
+    mode: "onBlur",
   });
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     setError(null);
     setPending(true);
 
-    authClient.signIn.email(
+    authClient.signUp.email(
       {
+        name: form.getValues("name"),
         email: form.getValues("email"),
         password: form.getValues("password"),
       },
@@ -70,10 +88,28 @@ export function SignInView() {
           onSubmit={form.handleSubmit(onSubmit)}
           className="p-6 border rounded-md space-y-4 m-2">
           <div>
-            <h1>Welcome Back</h1>
-            <p>Sign in to your account to continue.</p>
+            <h1>Let&apos;s get started</h1>
+            <p>Create an account to continue.</p>
           </div>
 
+          <div>
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>name</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="name"
+                      placeholder="Muzi"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}></FormField>
+          </div>
           <div>
             <FormField
               control={form.control}
@@ -99,6 +135,24 @@ export function SignInView() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>password</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="password"
+                      placeholder="••••••••"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}></FormField>
+          </div>
+          <div>
+            <FormField
+              control={form.control}
+              name="confirmPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>confirm password</FormLabel>
                   <FormControl>
                     <Input
                       type="password"
@@ -147,9 +201,9 @@ export function SignInView() {
             <p className="text-center text-sm">
               Don&apos;t have an account?{" "}
               <Link
-                href="/sign-up"
+                href="/sign-in"
                 className="underline underline-offset-4">
-                Sign up
+                Sign In
               </Link>
             </p>
           </div>
