@@ -1,6 +1,11 @@
 import Image from "next/image";
 import AuthForm from "./_components/form";
 
+/**
+ * 인증 폼과 소개 텍스트 및 액션 버튼을 포함하는 홈 페이지 레이아웃을 렌더링한다.
+ *
+ * @returns 홈 페이지 레이아웃을 나타내는 JSX 요소
+ */
 export default function Home() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">

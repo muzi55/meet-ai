@@ -4,6 +4,14 @@ import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
 import React, { useState } from "react";
 
+/**
+ * 세션 상태에 따라 회원가입 및 로그인 폼을 렌더링하고 authClient를 사용해 가입·로그인을 처리하는 React 클라이언트 컴포넌트입니다.
+ *
+ * - 세션이 있으면 사용자 이름 또는 이메일과 로그아웃 버튼을 표시합니다.
+ * - 세션이 없으면 이름·이메일·비밀번호를 입력하는 회원가입 폼과 이메일·비밀번호 입력의 로그인 폼을 표시합니다.
+ *
+ * @returns 렌더된 인증 폼 UI를 포함한 JSX 요소
+ */
 export default function AuthForm() {
   const { data: session } = authClient.useSession();
   const [name, setName] = useState("");
