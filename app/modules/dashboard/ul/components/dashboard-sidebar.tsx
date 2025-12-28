@@ -36,7 +36,7 @@ const secondSection = [
   {
     icon: StarIcon,
     label: "Upgrade",
-    href: "/upgradev",
+    href: "/upgrade",
   },
 ];
 
