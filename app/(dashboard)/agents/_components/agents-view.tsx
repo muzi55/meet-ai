@@ -1,16 +1,11 @@
 "use client";
 
-import { ErrorState } from "@/app/_components/error-state";
-import { LoadingState } from "@/app/_components/loading-state";
 import { useTRPC } from "@/app/trpc/client";
-import {
-  useQuery,
-  useSuspenseQuery,
-} from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 
 export function AgentsView() {
   const trpc = useTRPC();
-  const { data, isLoading, isError } = useSuspenseQuery(
+  const { data } = useSuspenseQuery(
     trpc.agents.getMany.queryOptions()
   );
 
