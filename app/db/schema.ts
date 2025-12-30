@@ -1,14 +1,11 @@
 import { nanoid } from "nanoid";
 import {
-  integer,
   pgTable,
   text,
-  varchar,
   boolean,
   timestamp,
   index,
 } from "drizzle-orm/pg-core";
-import { create } from "domain";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
