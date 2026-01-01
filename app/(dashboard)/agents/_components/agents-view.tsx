@@ -30,6 +30,7 @@ export function AgentsView() {
   return (
     <div>
       <h2>agents-view</h2>
+
       {JSON.stringify(data, null, 2)}
     </div>
   );
