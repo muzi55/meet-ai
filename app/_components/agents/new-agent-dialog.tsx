@@ -1,6 +1,7 @@
 "use client";
 
 import { ResponsiveDialog } from "../responsive-dialog";
+import AgentForm from "./agent-form";
 
 export function NewAgentDialog({
   open,
@@ -15,7 +16,10 @@ export function NewAgentDialog({
       onOpenChange={onOpenChange}
       title="Create New Agent"
       description="Fill in the details to create a new agent.">
-      new Agent Form
+      <AgentForm
+        onSuccess={() => onOpenChange(false)}
+        onCancel={() => onOpenChange(false)}
+      />
     </ResponsiveDialog>
   );
 }
