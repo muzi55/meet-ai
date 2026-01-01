@@ -8,8 +8,19 @@ import { getQueryClient, trpc } from "@/app/trpc/server";
 import { LoadingState } from "@/app/_components/loading-state";
 import { ErrorState } from "@/app/_components/error-state";
 import { ErrorBoundary } from "react-error-boundary/";
+import { ListHeader } from "@/app/_components/agents/list-header";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
 export default async function AgentsPage() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    redirect("/sign-in");
+  }
   /**
    *  1. QueryClient는 React Query의 핵심 객체로, 쿼리 캐시와 상태를 관리합니다.
    *  2. Next.js의 app route(서버 컴포넌트 기반) 환경에서는 SSR(서버사이드 렌더링)과 CSR(클라이언트사이드 렌더링) 모두에서 QueryClient 인스턴스가 중복 생성되지 않도록 관리하는 것이 중요합니다.
@@ -42,24 +53,27 @@ export default async function AgentsPage() {
     trpc.agents.getMany.queryOptions()
   );
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <ErrorBoundary
-        fallback={
-          <ErrorState
-            title="Error loading agents"
-            description="There was an error while loading the agents."
-          />
-        }>
-        <Suspense
+    <div>
+      <ListHeader />
+      <HydrationBoundary state={dehydrate(queryClient)}>
+        <ErrorBoundary
           fallback={
-            <LoadingState
-              title="Loading agents"
-              description="Please wait while we load the agents."
+            <ErrorState
+              title="Error loading agents"
+              description="There was an error while loading the agents."
             />
           }>
-          <AgentsView />
-        </Suspense>
-      </ErrorBoundary>
-    </HydrationBoundary>
+          <Suspense
+            fallback={
+              <LoadingState
+                title="Loading agents"
+                description="Please wait while we load the agents."
+              />
+            }>
+            <AgentsView />
+          </Suspense>
+        </ErrorBoundary>
+      </HydrationBoundary>
+    </div>
   );
 }
