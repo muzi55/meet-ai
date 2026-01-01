@@ -8,6 +8,7 @@ import { getQueryClient, trpc } from "@/app/trpc/server";
 import { LoadingState } from "@/app/_components/loading-state";
 import { ErrorState } from "@/app/_components/error-state";
 import { ErrorBoundary } from "react-error-boundary/";
+import { ListHeader } from "@/app/_components/agents/list-header";
 
 export default async function AgentsPage() {
   /**
@@ -42,24 +43,27 @@ export default async function AgentsPage() {
     trpc.agents.getMany.queryOptions()
   );
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <ErrorBoundary
-        fallback={
-          <ErrorState
-            title="Error loading agents"
-            description="There was an error while loading the agents."
-          />
-        }>
-        <Suspense
+    <div>
+      <ListHeader />
+      <HydrationBoundary state={dehydrate(queryClient)}>
+        <ErrorBoundary
           fallback={
-            <LoadingState
-              title="Loading agents"
-              description="Please wait while we load the agents."
+            <ErrorState
+              title="Error loading agents"
+              description="There was an error while loading the agents."
             />
           }>
-          <AgentsView />
-        </Suspense>
-      </ErrorBoundary>
-    </HydrationBoundary>
+          <Suspense
+            fallback={
+              <LoadingState
+                title="Loading agents"
+                description="Please wait while we load the agents."
+              />
+            }>
+            <AgentsView />
+          </Suspense>
+        </ErrorBoundary>
+      </HydrationBoundary>
+    </div>
   );
 }
